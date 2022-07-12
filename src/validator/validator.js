@@ -42,13 +42,7 @@ const isValidAddress = function(address) {
         if (Object.keys(address).length === 0) return false
         return true;
     }
-    //it checks whether the string contain only space or not
-    // const isValidString = function(value) {
-    //     if (typeof value === 'undefined' || value === null) return false
-    //     if (typeof value === 'string' && value.trim().length === 0) return false 
-
-//     return true;
-// }
+ 
 
 // ISBN validation
 const isvalidISBN = function(value) {
@@ -71,12 +65,6 @@ const isValidObjectId = function(ObjectId) {
     return mongoose.Types.ObjectId.isValid(ObjectId)
 }
 
-//Date validation
-// const isValidDate = function(Date) {
-//     return new Date();
-// };
-
-//Date Validation
 const isValidDate = function(date) {
     const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
     return dateRegex.test(date)
@@ -84,4 +72,3 @@ const isValidDate = function(date) {
 
 
 module.exports = { isValidName, isValidEmail, isValidMobile, isValidPassword, isValidObjectId, isValidRequestBody, isValid, isValidtitle, isValidDate, isValidAddress, isvalidISBN } //isValidString}
-    // isValidStreet,isValidCity,isValidPincode }

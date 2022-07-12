@@ -152,36 +152,6 @@ const getBook = async function(req, res) {
 
 
 
-// const getBook = async function(req, res) {
-//     try {
-//         const data = req.query
-//         const { userId, category, subcategory } = data
-//         // console.log(data);
-
-
-//         let obj = { isDeleted: false }
-
-//         obj.userId = userId
-//         if ((!validator.isValid(userId)) || (!validator.isValidObjectId(userId))) {
-//             return res.status(400).send({ status: false, msg: "Please provide UserId." })
-//         }
-
-//         let userData = await userModel.findById(userId)
-//         if (!userData) return res.status(404).send({ status: false, msg: "UserId not valid." })
-
-//         if (validator.isValid(category)) { obj.category = category }
-//         if (validator.isValid(subcategory)) { obj.subcategory = { $in: subcategory } }
-
-//         let find = await bookModel.find(obj).select({ ISBN: 0, subcategory: 0, isDeleted: 0, createdAt: 0, updatedAt: 0, _v: 0 }).sort({ title: 1 })
-//         if (find.length == 0) return res.status(404).send(({ status: false, message: "no such book found" }))
-//         res.status(200).send({ status: true, data: find })
-
-//     } catch (error) {
-//         console.log(error.message);
-//         res.status(500).send({ status: false, message: error.message });
-//     }
-// };
-
 const getBookByParams = async function(req, res) {
     try {
         let bookid = req.params.bookId
@@ -256,11 +226,6 @@ const updateBookByParams = async function(req, res) {
             return res.status(400).send({ status: false, message: "Enter a valid releasedAt format - YYYY-MM-DD " })
         }
 
-
-        //==========================================================================================>
-        // if (!validator.isValidName(body.excerpt) || !validator.isValidName(body.category) || !validator.isValidName(body.subcategory) || !validator.isValid(body.excerpt) || !validator.isValid(body.category) || !validator.isValid(body.subcategory)) {
-        //   return res.status(400).send({ status: false, message: "Data should not contain Numbers in excerpt,category &subcategory" });
-        // }
 
         let updateData = await bookModel.findOneAndUpdate({ _id: bookId, isDeleted: false }, { $set: { title, excerpt, ISBN, releasedAt } }, { releasedAt: new Date, new: true });
         res.status(200).send({ status: true, message: "Success", data: updateData });
