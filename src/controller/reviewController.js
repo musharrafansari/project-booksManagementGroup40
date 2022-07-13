@@ -7,12 +7,15 @@ const reviewModel = require("../models/reviewModel")
 const { isValidObjectId, isValidRequestBody, isValid } = require('../validator/validator')
 
 const createReviewByParams = async function (req, res) {
+    try{
     //===============================first check params===========================>
     let bookId = req.params.bookId
+    // console.log(bookId)
     if (!isValidObjectId(bookId))
         return res.status(400).send({ status: false, message: "Book id number is not valid" })
 
-    const checkbookId = await bookModel.find({ bookId: bookId, isDeleted: false })
+    const checkbookId = await bookModel.findById({ _id:bookId})
+    // console.log(checkbookId)
     if (!checkbookId)
         return res.status(404).send({ status: false, message: "book Id is not found." })
 
@@ -24,30 +27,14 @@ const createReviewByParams = async function (req, res) {
 
     let body = req.body
     //===================destructuring==============================================>
-    const { reviewedBy, rating, review, reviewedAt } = body
+    const { rating, review } = body
     //========================check valid body======================================>
     if (isValidRequestBody.body)
         return res.status(400).send({ satus: false, message: "please provide data" })
-    //=========================check reviewer =======================================>
-    // if (!reviewedBy)
-    //     return res.status(400).send({ status: false, message: "please provide review name" })
-    //==================================check alphabetic character====================>
-    if (!isValid(reviewedBy))
-        return res.status(400).send({ status: false, message: "please provide review name" })
-    //====================================review========================================>
     if (!review)
         return res.status(400).send({ status: false, message: "please provide review" })
     // //==========================check alphabetic character for review=============>
-    if (!isValid(review))
-        return res.status(400).send({ status: false, message: "please give alphabetic character" })
 
-
-    if (!validator.isValid(reviewedAt)) {
-        return res.status(400).send({ status: false, message: "Enter reviewedAt" })
-    }
-    if (!validator.isValidDate(reviewedAt)) {
-        return res.status(400).send({ status: false, message: "Enter a valid reviewedAt format - YYYY-MM-DD " })
-    }
 
 
     if (!rating)
@@ -57,12 +44,33 @@ const createReviewByParams = async function (req, res) {
 
     body.bookId = bookId
 
-    let reviewData = await reviewModel.create(body)
+    await reviewModel.create(body)
+    // console.log(reviewData)
+    //=======================================================================================>
+    let getReviewdata = await reviewModel.find({ bookId: bookId, isDeleted: false })
+    // console.log(getReviewdata)
+    if (!getReviewdata) { return res.status(404).send({ status: false, msg: "Review data not present for this bookId." }) }
+    //==============================reviewsData check=====================================================>
+    Object.assign(checkbookId._doc,{ reviewData:getReviewdata});
+
+
     await bookModel.updateOne({ _id: bookId }, { $inc: { reviews: 1 } })
-    res.status(201).send({ status: true, message: "Success", data: reviewData })
+    // res.status(201).send({ status: true, message: "Success", data: reviewData })
+    res.status(200).send({ status: true, message: "Book List", data: checkbookId });
+    }
+    catch (error) {
+        console.log(error.message);
+        res.status(500).send({ status: false, message: error.message });
+    }
+       
 }
 
+ 
+     
+
+
 const updateReviewByParams = async function (req, res) {
+    try{
     const bookReviewId = req.params
     // console.log(bookReviewId);
     const { bookId, reviewId } = bookReviewId
@@ -83,7 +91,7 @@ const updateReviewByParams = async function (req, res) {
         return res.status(400).send({ status: false, message: "reviewId is not valid" })
     const checkReviewId = await reviewModel.findById({ _id: reviewId })
     console.log(checkReviewId);
-    if (!checkReviewId)
+    if (!checkReviewId) 
         return res.status(404).send({ status: false, message: "review Id is not found" })
     //=============================== body ========================================>
     if (bookId != checkReviewId.bookId)
@@ -103,13 +111,18 @@ const updateReviewByParams = async function (req, res) {
     //==============================reviewsData check=====================================================>
     Object.assign(checkBookId._doc, { reviewsData: getReviewdata });
     res.status(200).send({ status: true, message: "Book List", data: checkBookId });
-
+    }
+    catch (error) {
+        console.log(error.message);
+        res.status(500).send({ status: false, message: error.message });
+    }
 }
 
 
 
 
 const deleteByparams = async function (req, res) {
+    try{
     const bookReviewId = req.params
     const { bookId, reviewId } = bookReviewId
     //=============================bookId check=======================================>
@@ -143,6 +156,12 @@ const deleteByparams = async function (req, res) {
     const updateDelete = await reviewModel.updateMany({ _id: reviewId }, { $set: { isDeleted: true } }, { new: true })
     await bookModel.updateOne({ _id: bookId }, { $inc: { reviews: -1 } })
     res.status(200).send({ status: true, mesaage: "Successfully deleted", data: `deleted data count = ${updateDelete.modifiedCount}` })
+    }
+    catch (error) {
+        console.log(error.message);
+        res.status(500).send({ status: false, message: error.message });
+    
+}
 }
 
 

@@ -71,4 +71,4 @@ const isValidDate = function(date) {
 }
 
 
-module.exports = { isValidName, isValidEmail, isValidMobile, isValidPassword, isValidObjectId, isValidRequestBody, isValid, isValidtitle, isValidDate, isValidAddress, isvalidISBN } //isValidString}
+module.exports = { isValidName, isValidEmail, isValidMobile, isValidPassword, isValidObjectId, isValidRequestBody, isValid, isValidtitle, isValidDate, isValidAddress, isvalidISBN } 
