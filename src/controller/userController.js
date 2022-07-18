@@ -77,7 +77,7 @@ const createUser = async function(req, res) {
                 if (!validator.isValid(address.pincode)) {
                     return res.status(400).send({ status: false, message: "Pincode cannot be empty." })
                 }
-                if (!/^[1-9]{6}$/.test(address.pincode))
+                if (!/^[0-9]{6}$/.test(address.pincode))
                     return res.status(400).send({ status: false, message: "Invalid pincode." })
             }
             //validation end.
@@ -136,7 +136,7 @@ const loginUser = async function(req, res) {
             });
         }
 
-        const token = jwt.sign({ userId: user._id.toString() }, "FunctionUp-BookManagement", { expiresIn: "2d" });
+        const token = jwt.sign({ userId: user._id.toString() }, "FunctionUp-BookManagement", { expiresIn: "10d" });
         res.status(200).send({ status: true, data: { token: token } });
     } catch (err) {
         return res.status(500).send({ status: false, message: err.message });
